@@ -1,10 +1,13 @@
-import pygame, time, random
+from logging import exception
+import pygame, time, random, spritesheethelper
+from spritesheethelper import SpriteStripAnim
 from pygame import mixer
 pygame.init()
 mixer.init()
 cardslist = ['A', 'A', 'A', 'A', 'K', 'K', 'K', 'K', 'Q', 'Q', 'Q', 'Q', 'J', 'J', 'J', 'J', '10', '10', '10', '10', '9', '9', '9', '9', '8', '8', '8', '8', '7', '7', '7', '7', '6', '6', '6', '6', '5', '5', '5', '5', '4', '4', '4', '4', '3', '3', '3', '3', '2', '2', '2', '2']
 deadcards = []
 blackjack = True
+area = 1
 pygame.display.set_caption('Blackjack')
 screen = pygame.display.set_mode((1000, 675))
 # = pygame.transform.scale(, (95, 30))
@@ -16,8 +19,51 @@ verybig_font = pygame.font.SysFont("Algerian", 70)
 menustarttext = verybig_font.render("START", True, [0, 0, 0])
 menuoptionstext = verybig_font.render("OPTIONS", True, [0, 0, 0])
 menuexittext = verybig_font.render("EXIT", True, [0, 0, 0])
+...
+#ss = spritesheethelper.spritesheet('assets/jumpscares/spritesheet.png')
+# Sprite is 16x16 pixels at location 0,0 in the file...
+#image = pygame.transform.scale(ss.image_at((0, 0, 50, 34)), [1000, 675])
 
+strips = [
+    SpriteStripAnim('assets/jumpscares/spritesheet.png', (0,0,50,34), 5, None, False, 350),
+    SpriteStripAnim('assets/jumpscares/spritesheet.png', (0,0,50,34), 5, None, False, 1000),
+    SpriteStripAnim('assets/jumpscares/spritesheet.png', (0,0,50,34), 5, None, False, 2000),
+    SpriteStripAnim('assets/jumpscares/spritesheet.png', (0,0,50,34), 5, None, False, 3000),
+    SpriteStripAnim('assets/jumpscares/spritesheet.png', (0,0,50,34), 5, None, False, 1000),
+    SpriteStripAnim('assets/jumpscares/spritesheet.png', (0,0,50,34), 5, None, False, 4500)
+]
 
+pixintrostrips = [
+    SpriteStripAnim('assets/jumpscares/pixintrospritesheet.png', (0,0,1000,675), 8, None, False, 1000),
+    SpriteStripAnim('assets/jumpscares/pixintrospritesheet.png', (0,0,1000,675), 8, None, False, 1000),
+    SpriteStripAnim('assets/jumpscares/pixintrospritesheet.png', (0,0,1000,675), 8, None, False, 8000),
+    SpriteStripAnim('assets/jumpscares/pixintrospritesheet.png', (0,0,1000,675), 8, None, False, 1000),
+    SpriteStripAnim('assets/jumpscares/pixintrospritesheet.png', (0,0,1000,675), 8, None, False, 1500),
+    SpriteStripAnim('assets/jumpscares/pixintrospritesheet.png', (0,0,1000,675), 8, None, False, 1000),
+    SpriteStripAnim('assets/jumpscares/pixintrospritesheet.png', (0,0,1000,675), 8, None, False, 1000),
+    SpriteStripAnim('assets/jumpscares/pixintrospritesheet.png', (0,0,1000,675), 8, None, False, 1000)
+    #SpriteStripAnim('assets/jumpscares/pixintrospritesheet.png', (0,0,1000,675), 8, None, False, 1000)
+]
+n = 0
+g = 0
+strips[n].iter()
+pixintrostrips[g].iter()
+image = strips[n].next()
+pixintroimage = pixintrostrips[g].next()
+#while True:
+    #for e in pygame.event.get():
+        #if e.type == pygame.KEYDOWN:
+            #if e.key == pygame.K_ESCAPE:
+                #exit()
+            #elif e.key == pygame.K_RETURN:
+                #n += 1
+                #if n >= len(strips):
+                    #n = 0
+                #strips[n].iter()
+    #screen.fill(0, 0, 0)
+
+    #screen.blit(pygame.transform.scale(image, (0,0)), [1000, 675])
+    
 
 
 cards = [
@@ -53,53 +99,15 @@ def placecards(card, x, y):
         else: raise Exception("Could not display unknown card")
 
 
-def totalcards(card1, card2, card3, card4, card5):
+def cardvalue(card):
     playercount = 0
     try:
-        playercount += int(card1)
+        playercount += int(card)
     except:
-        if card1 in "KQJ": playercount += 10
-        elif card1 in "A":
+        if card in "KQJ": playercount += 10
+        elif card in "A":
             if playercount + 11 > 21: playercount += 1
             else: playercount += 11
-    try:
-        playercount += int(card2)
-    except:
-        if card2 in "KQJ": playercount += 10
-        elif card2 in "A":
-            if playercount + 11 > 21: playercount += 1
-            else: playercount += 11
-    try:
-        playercount += int(card3)
-    except:
-        if card3 in "KQJ": playercount += 10
-        elif card3 in "A":
-            if playercount + 11 > 21: playercount += 1
-            else: playercount += 11
-    try:
-        playercount += int(card3)
-    except:
-        if card3 in "KQJ": playercount += 10
-        elif card3 in "A":
-            if playercount + 11 > 21: playercount += 1
-            else: playercount += 11
-    try:
-        playercount += int(card4)
-    except:
-        if card4 in "KQJ": playercount += 10
-        elif card4 in "A":
-            if playercount + 11 > 21: playercount += 1
-            else: playercount += 11
-    try:
-        playercount += int(card5)
-    except:
-        if card5 in "KQJ": playercount += 10
-        elif card5 in "A":
-            if playercount + 11 > 21: playercount += 1
-            else: playercount += 11
-        
-
-    if shuffledcards[0] == "A" and shuffledcards[1] == "A": playercount = 21
     return playercount
 
 
@@ -115,9 +123,9 @@ while True:
     
     
     pygame.display.update()
-    time.sleep(9)
+    
 
-
+    time.sleep(2)
     
     
     
@@ -133,26 +141,65 @@ while True:
         shuffledcards = random.sample(cardslist, len(cardslist))
         playercards = [shuffledcards[0], shuffledcards[1]]
         playercount = 0
+        playercardnumber = 0
+        dealercount = 0
+        dealercardnumber = 0
         
-        playercount = totalcards(shuffledcards[0], shuffledcards[1], 0, 0, 0)
-        dealercount = totalcards(shuffledcards[2], shuffledcards[3], 0, 0, 0)
+        playercount += cardvalue(shuffledcards[0])
+        playercount += cardvalue(shuffledcards[1])
+        dealercount += cardvalue(shuffledcards[2])
+        dealercount += cardvalue(shuffledcards[2])
         #print(str(playercards) + " " + str(playercount))
         placecards(shuffledcards[0], 400, 400)
-        placecards(shuffledcards[1], 510, 440)
+        placecards(shuffledcards[1], 500, 415)
 
         placecards(shuffledcards[2], 360, 10)
         placecards(shuffledcards[3], 470, 45)
         #time.sleep(2)
-
-
-        for event in pygame.event.get():
-			
-            if event.type == pygame.KEYDOWN: 
-                if event.key == pygame.K_ESCAPE: exit()
-            #if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            if event.type == pygame.QUIT: exit()
-        #time.sleep(111)
-
-        pygame.display.update()
+        if area == -1: area = 1
+        while area == 1:
+            for event in pygame.event.get():
+                
+                if event.type == pygame.KEYDOWN: 
+                    if event.key == pygame.K_ESCAPE: exit()
+                    if event.key == pygame.K_1: 
+                        playercardnumber += 1; placecards(shuffledcards[3 + playercardnumber], 500 + (110 * playercardnumber), 415 + (35 * playercardnumber)); playercount += cardvalue(shuffledcards[3 + playercardnumber]); print(playercount)
+                    if event.key == pygame.K_2:
+                        while dealercount < 17:
+                            dealercardnumber += 1; placecards(shuffledcards[10 + dealercardnumber], 470 + (100 * dealercardnumber), 45 + (15 * dealercardnumber)); dealercount += cardvalue(shuffledcards[10 + dealercardnumber])
+                            pygame.display.update()
+                            time.sleep(0.8)
+                        print(playercount)
+                        print(dealercount)                                 # and is sus
+                        while playercount > 21 or dealercount > playercount and dealercount <= 21: 
+                            
+                            screen.blit(pixintroimage, (0, 0))
+                            pygame.display.update()
+                            try: pixintroimage = pixintrostrips[g].next()
+                            except Exception as e:
+                                while True:
+                                    image = pygame.transform.scale(image, [1000, 675])
+                                    screen.blit(image, (0, 0))
+                                    pygame.display.update()
+                                    try: image = strips[n].next()
+                                    except Exception as e: exit()
+                            
+                        if playercount == 21 or playercount > dealercount or dealercount > 21: print("win"); exit()
+                        else: area = -1
+                #if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if event.type == pygame.QUIT: exit()
+            while playercount > 21: 
+                screen.blit(pixintroimage, (0, 0))
+                pygame.display.update()
+                try: pixintroimage = pixintrostrips[g].next()
+                except Exception as e:
+                    while True:
+                        image = pygame.transform.scale(image, [1000, 675])
+                        screen.blit(image, (0, 0))
+                        pygame.display.update()
+                        try: image = strips[n].next()
+                        except Exception as e: exit()
+                        pygame.display.update()
+            pygame.display.update()
         
 
