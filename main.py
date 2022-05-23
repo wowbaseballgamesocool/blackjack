@@ -1,4 +1,3 @@
-from logging import exception
 import pygame, time, random, spritesheethelper
 from spritesheethelper import SpriteStripAnim
 from pygame import mixer
@@ -8,6 +7,8 @@ cardslist = ['A', 'A', 'A', 'A', 'K', 'K', 'K', 'K', 'Q', 'Q', 'Q', 'Q', 'J', 'J
 deadcards = []
 blackjack = True
 area = 1
+minutes = 0
+seconds = 5
 pygame.display.set_caption('Blackjack')
 screen = pygame.display.set_mode((1000, 675))
 # = pygame.transform.scale(, (95, 30))
@@ -16,10 +17,15 @@ font_style = pygame.font.SysFont("Mochiy Pop One", 50)
 small_font = pygame.font.SysFont("Mochiy Pop One", 20)
 big_font = pygame.font.SysFont("Mochiy Pop One", 40)
 verybig_font = pygame.font.SysFont("Algerian", 70)
+huge_font = pygame.font.SysFont("Algerian", 175)
 menustarttext = verybig_font.render("START", True, [0, 0, 0])
 menuoptionstext = verybig_font.render("OPTIONS", True, [0, 0, 0])
 menuexittext = verybig_font.render("EXIT", True, [0, 0, 0])
-...
+
+
+secondevent = pygame.USEREVENT + 1
+pygame.time.set_timer(secondevent, 1000)
+
 #ss = spritesheethelper.spritesheet('assets/jumpscares/spritesheet.png')
 # Sprite is 16x16 pixels at location 0,0 in the file...
 #image = pygame.transform.scale(ss.image_at((0, 0, 50, 34)), [1000, 675])
@@ -41,7 +47,7 @@ pixintrostrips = [
     SpriteStripAnim('assets/jumpscares/pixintrospritesheet.png', (0,0,1000,675), 8, None, False, 1500),
     SpriteStripAnim('assets/jumpscares/pixintrospritesheet.png', (0,0,1000,675), 8, None, False, 1000),
     SpriteStripAnim('assets/jumpscares/pixintrospritesheet.png', (0,0,1000,675), 8, None, False, 1000),
-    SpriteStripAnim('assets/jumpscares/pixintrospritesheet.png', (0,0,1000,675), 8, None, False, 1000)
+    #SpriteStripAnim('assets/jumpscares/pixintrospritesheet.png', (0,0,1000,675), 8, None, False, 1000)
     #SpriteStripAnim('assets/jumpscares/pixintrospritesheet.png', (0,0,1000,675), 8, None, False, 1000)
 ]
 n = 0
@@ -130,14 +136,13 @@ while True:
     
     
     for event in pygame.event.get():
-			
         if event.type == pygame.KEYDOWN: 
             if event.key == pygame.K_ESCAPE: exit()
 		#if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
         if event.type == pygame.QUIT: exit()
 
     while blackjack:
-        screen.fill([0, 0, 0])
+        
         shuffledcards = random.sample(cardslist, len(cardslist))
         playercards = [shuffledcards[0], shuffledcards[1]]
         playercount = 0
@@ -150,16 +155,64 @@ while True:
         dealercount += cardvalue(shuffledcards[2])
         dealercount += cardvalue(shuffledcards[2])
         #print(str(playercards) + " " + str(playercount))
-        placecards(shuffledcards[0], 400, 400)
-        placecards(shuffledcards[1], 500, 415)
+        for event in pygame.event.get():
+            if event.type == secondevent: 
+                        seconds -= 1
+                        if seconds == -1: 
+                            if minutes != 0:
+                                minutes -= 1; seconds = 59
+                            else:
+                                while True:
+                                    pygame.event.get()
+                                    screen.blit(pixintroimage, (0, 0))
+                                    pygame.display.update()
+                                    try: pixintroimage = pixintrostrips[g].next()
+                                    except Exception as e:
+                                        while True:
+                                            pygame.event.get()
+                                            image = pygame.transform.scale(image, [1000, 675])
+                                            screen.blit(image, (0, 0))
+                                            pygame.display.update()
+                                            try: image = strips[n].next()
+                                            except Exception as e: exit()
 
-        placecards(shuffledcards[2], 360, 10)
-        placecards(shuffledcards[3], 470, 45)
+
         #time.sleep(2)
         if area == -1: area = 1
         while area == 1:
+            screen.fill([20, 20, 20])
+            if len(str(seconds)) == 1:
+                displayseconds = "0" + str(seconds)
+            else: displayseconds = str(seconds)
+            bgtimertext = huge_font.render(str(minutes) + ":" + str(displayseconds), True, [50, 50, 50])
+            screen.blit(bgtimertext, (250, 210))
+
+            placecards(shuffledcards[0], 400, 400)
+            placecards(shuffledcards[1], 500, 415)
+
+            placecards(shuffledcards[2], 360, 10)
+            placecards(shuffledcards[3], 470, 45)
+
             for event in pygame.event.get():
-                
+                if event.type == secondevent: 
+                    seconds -= 1
+                    if seconds == -1: 
+                        if minutes != 0:
+                            minutes -= 1; seconds = 59
+                        else:
+                            while True:
+                                pygame.event.get()
+                                screen.blit(pixintroimage, (0, 0))
+                                pygame.display.update()
+                                try: pixintroimage = pixintrostrips[g].next()
+                                except Exception as e:
+                                    while True:
+                                        pygame.event.get()
+                                        image = pygame.transform.scale(image, [1000, 675])
+                                        screen.blit(image, (0, 0))
+                                        pygame.display.update()
+                                        try: image = strips[n].next()
+                                        except Exception as e: exit()
                 if event.type == pygame.KEYDOWN: 
                     if event.key == pygame.K_ESCAPE: exit()
                     if event.key == pygame.K_1: 
@@ -172,12 +225,13 @@ while True:
                         print(playercount)
                         print(dealercount)                                 # and is sus
                         while playercount > 21 or dealercount > playercount and dealercount <= 21: 
-                            
+                            pygame.event.get()
                             screen.blit(pixintroimage, (0, 0))
                             pygame.display.update()
                             try: pixintroimage = pixintrostrips[g].next()
                             except Exception as e:
                                 while True:
+                                    pygame.event.get()
                                     image = pygame.transform.scale(image, [1000, 675])
                                     screen.blit(image, (0, 0))
                                     pygame.display.update()
@@ -189,11 +243,13 @@ while True:
                 #if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if event.type == pygame.QUIT: exit()
             while playercount > 21: 
+                pygame.event.get()
                 screen.blit(pixintroimage, (0, 0))
                 pygame.display.update()
                 try: pixintroimage = pixintrostrips[g].next()
                 except Exception as e:
                     while True:
+                        pygame.event.get()
                         image = pygame.transform.scale(image, [1000, 675])
                         screen.blit(image, (0, 0))
                         pygame.display.update()
